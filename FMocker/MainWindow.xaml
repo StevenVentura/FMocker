@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FMocker"
         mc:Ignorable="d"
-        Title="Fag Mocker" Height="300" Width="300">
+        Title="F-Mocker" Height="500" Width="600">
     <Grid>
-        <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="26,42,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Name="SaveButton" Content="セーブ" HorizontalAlignment="Left" Margin="26,78,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Name="ListenButton" Content="リセン" HorizontalAlignment="Left" Margin="158,42,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" />
-        <Button x:Name="PlayButton" Content="プレー" HorizontalAlignment="Left" Margin="158,78,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <ListBox x:Name="ListBoxObject" HorizontalAlignment="Left" Height="134" Margin="26,126,0,0" VerticalAlignment="Top" Width="114"/>
-        <TextBox x:Name="" HorizontalAlignment="Left" Height="134" Margin="158,126,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="77,41,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="SaveButton" Content="セーブ" HorizontalAlignment="Left" Margin="97,68,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="ListenButton" Content="リセン" HorizontalAlignment="Left" Margin="226,26,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" />
+        <Button x:Name="PlayButton" Content="プレー" HorizontalAlignment="Left" Margin="202,84,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <ListBox x:Name="ListBoxObject" HorizontalAlignment="Left" Height="303" Margin="26,126,0,0" VerticalAlignment="Top" Width="222"/>
+        <TextBox x:Name="OutputBox" HorizontalAlignment="Left" Height="303" Margin="266,126,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="239"/>
 
     </Grid>
 </Window>

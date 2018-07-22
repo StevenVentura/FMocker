@@ -10,40 +10,13 @@ namespace FMocker
     {
         //record,save,listen,play
 
-        //Record() puts the last 5 seconds of audio into an FClip object
-        public void AddLastXSecondsToList(long x)
+        public byte[] data;
+        public string fileName;
+
+        public FClip(byte[] data, string fileName)
         {
-
-
-
-        }
-
-        //only run once; thread to actually keep the last5 seconds of sound in memory
-        public void StartRecording()
-        {
-
-
-        }
-
-        //plays the selected sound back through the speaker
-        public void Listen(FClip clip)
-        {
-
-
-        }
-
-        //plays sound thru mic
-        public void PlayThroughMic(FClip clip)
-        {
-            //idk how yet
-        }
-
-
-        public void SaveToFile(FClip clip)
-        {
-
-
-
+            this.data = data;
+            this.fileName = fileName;
         }
 
 
