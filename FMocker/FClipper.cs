@@ -63,11 +63,12 @@ namespace FMocker
                 if ((source.Length - sourceOffset < count) ||
                     (target.Length - targetOffset < count))
                 {
-                    Console.WriteLine("count=" + count);
-                    Console.WriteLine("firstone="+(source.Length - sourceOffset));
-                    Console.WriteLine("secondone="+(target.Length - targetOffset));
-                    Console.WriteLine(Environment.StackTrace);
-                    throw new System.ArgumentException();
+                    //Console.WriteLine("count=" + count);
+                    //Console.WriteLine("firstone="+(source.Length - sourceOffset));
+                    //Console.WriteLine("secondone="+(target.Length - targetOffset));
+                    //Console.WriteLine(Environment.StackTrace);
+                    return;
+                    //throw new System.ArgumentException();
                 }
 
                 // The following fixed statement pins the location of the source and
@@ -188,7 +189,7 @@ namespace FMocker
         public FClip AddLastXSecondsToList()
         {
             //so easy just take last5 seconds of recording and put into an FClip object and push to tree
-            string fileName = ""+GetCurrentTime();
+            string fileName = ""+GetCurrentTime() + ".wav";
             byte[] byteDataInCorrectOrder;
             using (WaveWriter w = new WaveWriter(SaveDirectory + fileName, capture.WaveFormat))
             {

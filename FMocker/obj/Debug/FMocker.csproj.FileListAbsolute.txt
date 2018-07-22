@@ -17,3 +17,5 @@ C:\Users\Yoloswag\source\repos\FMocker\FMocker\obj\Debug\FMocker.csproj.CopyComp
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\obj\Debug\FMocker.exe
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\obj\Debug\FMocker.pdb
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\TextBoxStreamWriter.cs
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\NAudio.dll
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\NAudio.xml

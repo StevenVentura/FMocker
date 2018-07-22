@@ -7,12 +7,14 @@
         mc:Ignorable="d"
         Title="F-Mocker" Height="500" Width="600">
     <Grid>
-        <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="77,41,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Name="SaveButton" Content="セーブ" HorizontalAlignment="Left" Margin="97,68,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button x:Name="ListenButton" Content="リセン" HorizontalAlignment="Left" Margin="226,26,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" />
-        <Button x:Name="PlayButton" Content="プレー" HorizontalAlignment="Left" Margin="202,84,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="45,32,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="SaveButton" Content="セーブ" HorizontalAlignment="Left" Margin="45,68,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="ListenButton" Content="リセン" HorizontalAlignment="Left" Margin="125,52,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" />
+        <Button x:Name="PlayButton" Content="プレー" HorizontalAlignment="Left" Margin="317,58,0,0" VerticalAlignment="Top" Width="99" Click="Button_Click" Height="32"/>
+        <Button x:Name="CloseButton" Content="Close" HorizontalAlignment="Left" Margin="517,0,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <ListBox x:Name="ListBoxObject" HorizontalAlignment="Left" Height="303" Margin="26,126,0,0" VerticalAlignment="Top" Width="222"/>
-        <TextBox x:Name="OutputBox" HorizontalAlignment="Left" Height="303" Margin="266,126,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="239"/>
+        <TextBox x:Name="OutputBox" HorizontalAlignment="Left" Height="303" Margin="266,126,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="239"/>
+        <Button x:Name="KillButton" Content="殺す" HorizontalAlignment="Left" Margin="430,87,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
 
     </Grid>
 </Window>
