@@ -1,0 +1,18 @@
+﻿<Window x:Class="FMocker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FMocker"
+        mc:Ignorable="d"
+        Title="Fag Mocker" Height="300" Width="300">
+    <Grid>
+        <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="26,42,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="SaveButton" Content="セーブ" HorizontalAlignment="Left" Margin="26,78,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="ListenButton" Content="リセン" HorizontalAlignment="Left" Margin="158,42,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click" />
+        <Button x:Name="PlayButton" Content="プレー" HorizontalAlignment="Left" Margin="158,78,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <ListBox x:Name="ListBoxObject" HorizontalAlignment="Left" Height="134" Margin="26,126,0,0" VerticalAlignment="Top" Width="114"/>
+        <TextBox x:Name="" HorizontalAlignment="Left" Height="134" Margin="158,126,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="120"/>
+
+    </Grid>
+</Window>
