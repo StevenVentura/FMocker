@@ -176,9 +176,29 @@ namespace FMocker
         {
             this.TimeInterval = TimeInterval;
         }
+        private bool IsFromExternalFile(string input)
+        {
+            return input.Contains(":");
+        }
+        public string AddAndMapPath(string input)
+        {
+            if (IsFromExternalFile(input))
+            {
+                string newName = ":" + input.Substring(input.LastIndexOf('\\')+1);
+                MappingOfShortenedNamesToDirectories.Add(newName, input);
+                return newName;
+            }
+            else
+                return input;
+        }
 
+        public Dictionary<string, string> MappingOfShortenedNamesToDirectories = new Dictionary<string, string>();
         public string GetPath(string itemName)
         {
+            if (IsFromExternalFile(itemName))
+            {
+                return MappingOfShortenedNamesToDirectories[itemName];
+            }
             return System.IO.Path.GetFullPath(
                                 System.IO.Path.Combine(Directory.GetCurrentDirectory(),
                                         SaveDirectory + itemName));

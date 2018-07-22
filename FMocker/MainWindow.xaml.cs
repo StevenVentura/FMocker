@@ -1,8 +1,10 @@
-﻿using NAudio.Wave;
+﻿using Microsoft.Win32;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Media;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -23,6 +26,19 @@ namespace FMocker
     /// </summary>
     public partial class MainWindow : Window
     {
+        //https://stackoverflow.com/questions/743906/how-to-hide-close-button-in-wpf-window
+        private const int GWL_STYLE = -16;
+        private const int WS_SYSMENU = 0x80000;
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        private void OnThisWindowWasLoaded(object sender, RoutedEventArgs e)
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -48,7 +64,7 @@ namespace FMocker
             {
                 case "RecordButton":
                     FClip clip = clipper.AddLastXSecondsToList();
-                    ListBoxObject.Items.Add(clip.fileName);
+                    ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
                     Console.WriteLine(clip.fileName + " added.");
                     break;
                 case "SaveButton":
@@ -135,6 +151,29 @@ namespace FMocker
                     break;
                 case "CloseButton":
                     Environment.Exit(0);
+                    break;
+                case "LoadButton":
+                    OpenFileDialog ofd = new OpenFileDialog();
+                    ofd.Multiselect = true;
+                    ofd.DefaultExt = ".wav";
+                    ofd.Filter = "soundfiles (.wav)|*.wav";
+                   
+                    if (ofd.ShowDialog() == true)
+                    {
+                        string[] fileNames = new string[ofd.FileNames.Length];
+                        string[] pathNames = new string[ofd.FileNames.Length];
+                        for (int i = 0; i < fileNames.Length; i++)
+                        {
+                            fileNames[i] = System.IO.Path.GetFileName(ofd.FileNames[i]);
+                            pathNames[i] = System.IO.Path.GetDirectoryName(ofd.FileName);
+                            ListBoxObject.Items.Add(clipper.AddAndMapPath(pathNames[i] + "\\" + fileNames[i]));
+                        }
+
+
+                        
+
+
+                    }
                     break;
             }
 

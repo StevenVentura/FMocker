@@ -22,3 +22,7 @@ $RECYCLE.BIN/
 # Operating System Files
 # =========================
 *.wav
+FMocker/obj/Debug/MainWindow.g.cs
+FMocker/obj/Debug/MainWindow.g.cs
+FMocker/obj/Debug/FMocker.g.resources
+FMocker/obj/Debug/MainWindow.baml

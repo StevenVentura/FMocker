@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FMocker"
         mc:Ignorable="d"
+        Loaded="OnThisWindowWasLoaded"
         Title="F-Mocker" Height="500" Width="600">
     <Grid>
         <Button x:Name="RecordButton" Content="レコード" HorizontalAlignment="Left" Margin="45,32,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
@@ -15,6 +16,7 @@
         <ListBox x:Name="ListBoxObject" HorizontalAlignment="Left" Height="303" Margin="26,126,0,0" VerticalAlignment="Top" Width="222"/>
         <TextBox x:Name="OutputBox" HorizontalAlignment="Left" Height="303" Margin="266,126,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="239"/>
         <Button x:Name="KillButton" Content="殺す" HorizontalAlignment="Left" Margin="430,87,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button x:Name="LoadButton" Content="ロード" HorizontalAlignment="Left" Margin="0,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
 
     </Grid>
 </Window>
