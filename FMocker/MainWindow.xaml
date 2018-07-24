@@ -17,6 +17,27 @@
         <TextBox x:Name="OutputBox" HorizontalAlignment="Left" Height="303" Margin="266,126,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="239"/>
         <Button x:Name="KillButton" Content="殺す" HorizontalAlignment="Left" Margin="430,87,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <Button x:Name="LoadButton" Content="ロード" HorizontalAlignment="Left" Margin="0,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-
+        <Button x:Name="RenameButton" Content="名前" HorizontalAlignment="Left" Margin="125,434,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Slider x:Name="shroud" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="201" ValueChanged="Slider_ValueChanged"/>
+        <!--<Grid Background="Black" Opacity="0.5"/>-->
+        <!-- https://stackoverflow.com/questions/8103743/wpf-c-sharp-inputbox -->
+        <!--<Border
+            MinWidth="250"
+            Background="Orange" 
+            BorderBrush="Black" 
+            BorderThickness="1" 
+            CornerRadius="0,55,0,55" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Margin="5" Text="Input Box:" FontWeight="Bold" FontFamily="Cambria" />
+                <TextBox MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="InputTextBox"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button x:Name="YesButton" Margin="5" Content="Yes" Background="{x:Null}" Click="YesButton_Click"/>
+                    <Button x:Name="NoButton" Margin="5" Content="No" Background="{x:Null}" Click="NoButton_Click" />
+                </StackPanel>
+            </StackPanel>
+        </Border>-->
     </Grid>
+    
 </Window>

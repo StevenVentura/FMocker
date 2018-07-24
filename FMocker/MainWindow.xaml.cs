@@ -38,23 +38,45 @@ namespace FMocker
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+            Go(); 
         }
         public MainWindow()
         {
             InitializeComponent();
-            Go();
+            
         }
+        bool isDown = false;
         private FClipper clipper = null;
         private void Go()
         {
-            new Thread(new ThreadStart(() =>
+            
+           
+
+            
+            Thread tred = new Thread(new ThreadStart(() =>
             {
-                TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher,OutputBox);
+                TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
                 clipper = new FClipper(5000);
                 clipper.StartRecording();
+                Console.WriteLine("Recording started.");
+                
+            }));
+            tred.SetApartmentState(ApartmentState.STA);
+            tred.Start();
 
-            })).Start();
-
+            /*while (true)
+            {
+                Thread.Sleep(10);
+                if (Keyboard.IsKeyDown(Key.OemPlus) && !isDown)
+                {
+                    isDown = true;
+                    Button_Click(PlayButton, null);
+                }
+                else
+                {
+                    isDown = false;
+                }
+            }*/
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -73,7 +95,12 @@ namespace FMocker
                         Console.WriteLine("Nothing selected");
                         return;
                     }
-                    break;
+                    for (int n = -1; n < WaveOut.DeviceCount; n++)
+                    {
+                        var caps = WaveOut.GetCapabilities(n);
+                        Console.WriteLine(caps.ProductName);
+                    }
+                        break;
                 case "ListenButton":
                     {
                         if (((string)(ListBoxObject.SelectedValue)) == null)
@@ -81,10 +108,48 @@ namespace FMocker
                             Console.WriteLine("Nothing selected");
                             return;
                         }
+
                         string SelectedName = (string)(ListBoxObject.SelectedValue);
                         Console.WriteLine("Listening to " + SelectedName);
-                        SoundPlayer simpleSound = new SoundPlayer(clipper.GetPath(SelectedName));
-                        simpleSound.Play();
+                        Thread thread = new Thread(new ParameterizedThreadStart((__SelectedName) =>
+                        {
+                            string _SelectedName = (string)__SelectedName;
+                            //https://github.com/naudio/NAudio
+                            try
+                            {
+                                using (var audioFile = new AudioFileReader(clipper.GetPath(_SelectedName)))
+                                {
+                                    int selDevice = -1;
+                                    for (int n = -1; n < WaveOut.DeviceCount; n++)
+                                    {
+                                        var caps = WaveOut.GetCapabilities(n);
+                                        if (caps.ProductName.Contains("Headset Earphone"))
+                                        {
+                                            selDevice = n;
+                                            break;
+                                        }
+                                    }
+                                    using (var outputDevice = new WaveOutEvent()
+                                    {
+                                        DeviceNumber = selDevice
+                                    })
+                                    {
+
+                                        outputDevice.Init(audioFile);
+                                        outputDevice.Volume = (float)percentagevolume;
+                                        outputDevice.Play();
+                                        while (outputDevice.PlaybackState == PlaybackState.Playing)
+                                        {
+                                            Thread.Sleep(1000);
+                                        }
+                                    }
+                                }
+                            }
+                            catch (System.Runtime.InteropServices.COMException e3)
+                            { Console.WriteLine(e3); }
+                        }));
+                        thread.Start(SelectedName);
+
                     }
                     break;
                 case "PlayButton":
@@ -122,7 +187,9 @@ namespace FMocker
                                             DeviceNumber = selDevice
                                         })
                                         {
+                                            
                                             outputDevice.Init(audioFile);
+                                            outputDevice.Volume = (float)percentagevolume;
                                             outputDevice.Play();
                                             while (outputDevice.PlaybackState == PlaybackState.Playing)
                                             {
@@ -175,13 +242,40 @@ namespace FMocker
 
                     }
                     break;
+                case "RenameButton":
+                    {
+                        if (((string)(ListBoxObject.SelectedValue)) == null)
+                        {
+
+                            Console.WriteLine("Nothing selected");
+                            return;
+                        }
+                        string SelectedName = (string)(ListBoxObject.SelectedValue);
+
+
+
+
+
+                    }
+                    break;
             }
 
         }
         private List<Thread> KillableThreads = new List<Thread>();
 
+        public void YesButton_Click(MainWindow w)
+        {
 
+        }
+        public void NoButton_Click(MainWindow w)
+        {
 
-       
+        }
+        double percentagevolume;
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            percentagevolume = shroud.Value / 10.0;
+        }
+
     }
 }
