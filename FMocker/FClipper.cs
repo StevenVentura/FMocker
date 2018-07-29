@@ -180,26 +180,68 @@ namespace FMocker
         {
             return input.Contains(":");
         }
+        public string Rename(string oldPath, string newPath, bool colonStart, string nameWithoutColon)
+        {
+            if (colonStart == false)
+            {
+                LocalDirList.Remove(oldPath.Substring(oldPath.LastIndexOf('\\') + 1));
+                LocalDirList.Add(nameWithoutColon);
+                return nameWithoutColon;
+            }
+
+            string oldShortName = String.Copy(Reverse_MappingOfShortenedNamesToDirectories[oldPath]);
+            String newShortName = String.Copy(nameWithoutColon);
+
+            if (colonStart)
+                newShortName = ":" + newShortName;
+
+            MappingOfShortenedNamesToDirectories.Remove(oldShortName);
+            MappingOfShortenedNamesToDirectories.Add(newShortName, newPath);
+
+
+
+
+            Reverse_MappingOfShortenedNamesToDirectories.Remove(oldPath);
+            Reverse_MappingOfShortenedNamesToDirectories.Add(newPath, newShortName);
+
+            return newShortName;
+
+        }
         public string AddAndMapPath(string input)
         {
             if (IsFromExternalFile(input))
             {
-                string newName = ":" + input.Substring(input.LastIndexOf('\\')+1);
-                MappingOfShortenedNamesToDirectories.Add(newName, input);
+                string newName = ":" + input.Substring(input.LastIndexOf('\\') + 1);
+                try
+                {
+                    MappingOfShortenedNamesToDirectories.Add(newName, input);
+                    Reverse_MappingOfShortenedNamesToDirectories.Add(input, newName);
+                }
+                catch (Exception)
+                {
+                    //catch if it's already been added to the map
+                    return null;
+                }
                 return newName;
             }
             else
+            {
+                LocalDirList.Add(input);
                 return input;
+            }
         }
 
+        public List<string> LocalDirList = new List<string>();
         public Dictionary<string, string> MappingOfShortenedNamesToDirectories = new Dictionary<string, string>();
+        public Dictionary<string, string> Reverse_MappingOfShortenedNamesToDirectories = new Dictionary<string, string>();
+
         public string GetPath(string itemName)
         {
             if (IsFromExternalFile(itemName))
             {
                 return MappingOfShortenedNamesToDirectories[itemName];
             }
-            return System.IO.Path.GetFullPath(
+            else return System.IO.Path.GetFullPath(
                                 System.IO.Path.Combine(Directory.GetCurrentDirectory(),
                                         SaveDirectory + itemName));
         }

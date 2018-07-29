@@ -88,6 +88,8 @@ namespace FMocker
                     FClip clip = clipper.AddLastXSecondsToList();
                     ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
                     Console.WriteLine(clip.fileName + " added.");
+                    
+                    
                     break;
                 case "SaveButton":
                     if (((string)(ListBoxObject.SelectedValue)) == null)
@@ -168,6 +170,7 @@ namespace FMocker
                             {
                                 string _SelectedName = (string)__SelectedName;
                                 //https://github.com/naudio/NAudio
+                                
                                 try
                                 {
                                     using (var audioFile = new AudioFileReader(clipper.GetPath(_SelectedName)))
@@ -200,6 +203,10 @@ namespace FMocker
                                 }
                                 catch (System.Runtime.InteropServices.COMException e3)
                                 { Console.WriteLine(e3); }
+                                catch (Exception e4)
+                                {
+                                    Console.WriteLine(e4);
+                                }
                             }));
                             thread.Start(SelectedName);
                             KillableThreads.Add(thread);
@@ -234,6 +241,7 @@ namespace FMocker
                             fileNames[i] = System.IO.Path.GetFileName(ofd.FileNames[i]);
                             pathNames[i] = System.IO.Path.GetDirectoryName(ofd.FileName);
                             ListBoxObject.Items.Add(clipper.AddAndMapPath(pathNames[i] + "\\" + fileNames[i]));
+                            Console.WriteLine("Loaded " + pathNames[i] + "\\" + fileNames[i] + ".");
                         }
 
 
@@ -252,22 +260,75 @@ namespace FMocker
                         }
                         string SelectedName = (string)(ListBoxObject.SelectedValue);
 
+                        RetardBox.Visibility = Visibility.Visible;
 
+                        RenamePath = clipper.GetPath(SelectedName);
+                        RenameShortName = String.Copy(SelectedName);
 
+                        string dispName = "";
+                        if (SelectedName.StartsWith(":") && SelectedName.Length != 1)
+                        {
+                            dispName = SelectedName.Substring(1);
+                        }
+                        else
+                            dispName = SelectedName;
+                        
 
-
+                        NameInputHandle.Text = dispName;
+                       
                     }
+                    break;
+                case "YesButton":
+                    
+                    string textToFix = NameInputHandle.Text;
+                    //remove extension from text if there is one
+                    if (textToFix.Contains("."))
+                    {
+                        textToFix = textToFix.Substring(0, textToFix.IndexOf('.'));
+                    }
+                    
+                    //save the old extension
+                    string correctExtensionPlusDot = RenamePath.Substring(RenamePath.IndexOf('.'));
+                    if (textToFix.StartsWith(":"))
+                        return;
+
+                    //append the old extension to the new text
+                    string renamedPath = RenamePath.Substring(0, RenamePath.LastIndexOf("\\"))
+                                        + "\\" + textToFix + correctExtensionPlusDot;
+                    try
+                    {
+                        System.IO.File.Move(RenamePath, renamedPath);
+
+                        //now fix ui to reflect changes
+                        ListBoxObject.Items[ListBoxObject.SelectedIndex] = clipper.Rename(RenamePath, renamedPath,
+                                                                        RenameShortName.StartsWith(":"), textToFix + correctExtensionPlusDot);
+
+                        
+                    }
+                    catch(Exception ere3)
+                    {
+                        Console.Error.WriteLine("crashmessage=" + ere3.Message + "\r\n" + ere3.StackTrace);
+                    }
+                    RetardBox.Visibility = Visibility.Hidden;
+
+                    break;
+                case "NoButton":
+                    RetardBox.Visibility = Visibility.Hidden;
                     break;
             }
 
         }
+        private string RenamePath;
+        private string RenameShortName;
+        
+
         private List<Thread> KillableThreads = new List<Thread>();
 
-        public void YesButton_Click(MainWindow w)
+        public void YesButton_Click(Object sender, EventArgs r)
         {
 
         }
-        public void NoButton_Click(MainWindow w)
+        public void NoButton_Click(Object sender, EventArgs r)
         {
 
         }
