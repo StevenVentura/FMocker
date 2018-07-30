@@ -1,0 +1,10 @@
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\lib\FonixTalk.dll
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\lib\ftalk_us.dll
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\lib\ftalk_us.dic
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\SharpTalk.XML
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\SharpTalk.dll
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\bin\Debug\SharpTalk.pdb
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Debug\SharpTalk.csproj.CoreCompileInputs.cache
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Debug\SharpTalk.dll
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Debug\SharpTalk.pdb
+C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Debug\SharpTalk.csprojAssemblyReference.cache

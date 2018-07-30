@@ -31,3 +31,6 @@ FMocker/obj/Debug/MainWindow.g.cs
 *.ide-wal
 .vs/FMocker/v15/Server/sqlite3/storage.ide
 *.ide
+*.ide
+*.ide-shm
+*.ide-wal
