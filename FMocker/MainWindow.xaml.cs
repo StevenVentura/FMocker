@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
+using System.Speech.Recognition;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,14 +46,29 @@ namespace FMocker
             InitializeComponent();
             
         }
-        bool isDown = false;
+        Thread automoonbasethread = null;
+        private void VRecogToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            //
+            if ((VRecogToggle.IsChecked == true))
+            {
+                automoonbasethread = new Thread(new ThreadStart(() =>
+                {
+                    speechrecog();
+
+                }));
+                automoonbasethread.Start();
+            }
+            else
+            {
+                automoonbasethread.Abort();
+            }
+        }
+
+                bool isDown = false;
         private FClipper clipper = null;
         private void Go()
         {
-            
-           
-
-            
             Thread tred = new Thread(new ThreadStart(() =>
             {
                 TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
@@ -64,19 +80,32 @@ namespace FMocker
             tred.SetApartmentState(ApartmentState.STA);
             tred.Start();
 
-            /*while (true)
+           
+        }
+        private void speechrecog()
+        {
+            //https://www.codeproject.com/Articles/483347/Speech-recognition-speech-to-text-text-to-speech-a
+            SpeechRecognitionEngine sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
+            sre.EndSilenceTimeoutAmbiguous = new TimeSpan(0);
+            sre.EndSilenceTimeout = new TimeSpan(0);
+            sre.LoadGrammar(new DictationGrammar());
+           
+
+            sre.SetInputToDefaultAudioDevice();
+           
+            while (true)
             {
-                Thread.Sleep(10);
-                if (Keyboard.IsKeyDown(Key.OemPlus) && !isDown)
+                RecognitionResult Result = sre.Recognize();
+                string ResultString = "";
+                foreach (RecognizedWordUnit w in Result.Words)
                 {
-                    isDown = true;
-                    Button_Click(PlayButton, null);
+                    ResultString += w.Text + " ";
+
                 }
-                else
-                {
-                    isDown = false;
-                }
-            }*/
+                Console.WriteLine(ResultString);
+            }
+
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

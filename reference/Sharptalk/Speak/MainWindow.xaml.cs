@@ -43,16 +43,68 @@ namespace StevenTTS
         private void begin()
         { 
         TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBoxHandle);
+            int index = -1;
+            while (File.Exists("dump" + ++index + ".wav"))
+            {
+                File.Delete("dump" + index + ".wav");
+            }
 
             foreach (var value in Enum.GetValues(typeof(TtsVoice)))
                 VoiceSelector.Items.Add(value);
             VoiceSelector.SelectedIndex = 0;
         new Thread(new ThreadStart(() =>
         {
-
-
+            //start the voice saver
+            new SpeechInputFromSpeakerSaver().begindumpingfiles();
 
         })).Start();
+        }
+        class SpeechInputFromSpeakerSaver
+        {
+            public void begindumpingfiles()
+            {
+                uint filecounter = 0;
+                while (true)
+                {
+                    using (var capture = new CSCore.SoundIn.WasapiLoopbackCapture())
+                    {
+                    //if necessary, you can choose a device here
+                    //to do so, simply set the device property of the capture to any MMDevice
+                    //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
+                    
+                        //initialize the selected device for recording
+                        capture.Initialize();
+                        //create a wavewriter to write the data to
+                        filecounter++;
+                        if (filecounter > 100)
+                            filecounter = 0;
+                        using (WaveWriter w = new WaveWriter("dump" + filecounter + ".wav", capture.WaveFormat))
+                        {
+
+                            //setup an eventhandler to receive the recorded data. this is fired 10 times per second
+                            capture.DataAvailable += (s, e) =>
+                            {
+                            //save the recorded audio
+                            //Log("e.Data.Length= " + e.Data.Length);//35280
+                            w.Write(e.Data, e.Offset, e.ByteCount);
+                            //shifter.Add(e.Data, e.Offset, e.ByteCount);
+                        };
+
+                            //start recording
+                            capture.Start();
+                            //record for 5 seconds
+                            Thread.Sleep(5000);
+                            //stop recording
+                            capture.Stop();
+                        }
+                    }
+                }
+
+
+            }
+
+
+
         }
 
         private string memetext(string boring)
@@ -163,10 +215,10 @@ namespace StevenTTS
                {
                    Console.WriteLine("idiot mock started.");
                    IdiotMock moron = new IdiotMock();
-                   moron.wasapicapture();
+                   
                    while(true)
                    {
-                       Thread.Sleep(100);
+                       //Thread.Sleep(100);
                        moron.cycle();
                    }
                    //listen to voices
@@ -186,79 +238,42 @@ namespace StevenTTS
         private Thread idiotMockRecogToMBATTS = null;
         private class IdiotMock
         {
-            private SpeechStreamer m;
-            public void wasapicapture()
+            private int localcounter = -1;   
+            private void recognizer_SpeechRecognized(SpeechRecognizedEventArgs e)
             {
-                new Thread(new ThreadStart(() =>
-                {
-                    using (var capture = new CSCore.SoundIn.WasapiLoopbackCapture())
-                    {
-                        //if necessary, you can choose a device here
-                        //to do so, simply set the device property of the capture to any MMDevice
-                        //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
-
-                        //initialize the selected device for recording
-                        capture.Initialize();
 
 
-
-                    //create a wavewriter to write the data to
-                    using (m = new SpeechStreamer(256))//WaveWriter w = new WaveWriter(SaveDirectory + "dump.wav", capture.WaveFormat))
-                        {
-
-                            //setup an eventhandler to receive the recorded data. this is fired 10 times per second
-                            capture.DataAvailable += (s, e) =>
-                            {
-                                //save the recorded audio
-                                //Log("e.Data.Length= " + e.Data.Length);//35280
-                                //w.Write(e.Data, e.Offset, e.ByteCount);
-                                //shifter.Add(e.Data, e.Offset, e.ByteCount);
-                                m.Write(e.Data, e.Offset, e.ByteCount);
-                            };
-
-                            //start recording
-                            capture.Start();
-
-                            bool always = true;
-                            while (always) ;
-                            //stop recording
-                            capture.Stop();
-                        }
-                    }
-            })).Start();
             }
             //record audio and keep spamming the um thing
             public void cycle()
             {
                 
-                SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine();
-                Grammar dictationGrammar = new DictationGrammar();
-                recognizer.LoadGrammar(dictationGrammar);
+                SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(
+                    new System.Globalization.CultureInfo("en-US"));
+                
+                
+                //recognizer.LoadGrammar(new DictationGrammar());
+                //while(!File.Exists("dump" + localcounter + ".wav"))
+                //{
+                //    localcounter++;
+                //    if (localcounter > 100)
+                //        localcounter = 0;
+                //}
+                //Console.WriteLine("detecetd file " + "dump" + localcounter + ".wav");
+
+                //Thread.Sleep(5000);
+                recognizer.SetInputToDefaultAudioDevice();
+                //recognizer.SetInputToWaveFile("dump" + localcounter + ".wav");
+                recognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
+                RecognitionResult result = recognizer.Recognize();
                 try
                 {
-                    System.Speech.AudioFormat.SpeechAudioFormatInfo formatInfo = new System.Speech.AudioFormat.SpeechAudioFormatInfo(8000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
-                    recognizer.SetInputToAudioStream(m, formatInfo);
-                    try
-                    {
-                        //https://social.msdn.microsoft.com/Forums/en-US/8b8ffed4-ed36-43db-bd2f-4db88ca0898e/passing-in-a-user-created-stream-for-the-speech-recognition-engines-setinputtoaudiostream-how?forum=kinectsdk
-                        //7/30/18: use this
-                        https://social.msdn.microsoft.com/Forums/en-US/8b8ffed4-ed36-43db-bd2f-4db88ca0898e/passing-in-a-user-created-stream-for-the-speech-recognition-engines-setinputtoaudiostream-how?forum=kinectsdk
-                        RecognitionResult result = recognizer.Recognize();
-                        string res = result.Text;
-                        Console.WriteLine("res= " + res);
-                    }
-                    catch(System.FormatException) { }  
-
-                        
+                    File.Delete("dump" + localcounter + ".wav");
                 }
-                catch (InvalidOperationException exception)
-                {
-                    Console.Error.WriteLine(String.Format("Could not recognize input from default aduio device. Is a microphone or sound card available?\r\n{0} - {1}.", exception.Source, exception.Message));
-                }
-                finally
-                {
-                    recognizer.UnloadAllGrammars();
-                }
+                catch (Exception) { }
+                localcounter++;
+                string res = result.Text;
+                Console.WriteLine("res= " + res);
 
             }
 

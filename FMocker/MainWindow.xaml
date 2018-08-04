@@ -19,6 +19,7 @@
         <Button x:Name="LoadButton" Content="ロード" HorizontalAlignment="Left" Margin="0,104,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <Button x:Name="RenameButton" Content="名前" HorizontalAlignment="Left" Margin="125,434,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <Slider x:Name="shroud" HorizontalAlignment="Left" Margin="158,10,0,0" VerticalAlignment="Top" Width="201" ValueChanged="Slider_ValueChanged"/>
+        <CheckBox x:Name="VRecogToggle" Content="vRecog->MbAlpha" HorizontalAlignment="Left" Margin="266,443,0,0" VerticalAlignment="Top" Height="25" Width="117" Unchecked ="VRecogToggle_Checked" Checked="VRecogToggle_Checked"/>
         <!--<Grid Background="Black" Opacity="0.5"/>-->
         <!-- https://stackoverflow.com/questions/8103743/wpf-c-sharp-inputbox -->
         <Border
