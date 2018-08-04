@@ -14,7 +14,7 @@
         <ComboBox x:Name="VoiceSelector" HorizontalAlignment="Left" Margin="159,27,0,0" VerticalAlignment="Top" Width="120"/>
         <Slider x:Name="shroud" HorizontalAlignment="Left" Margin="10,229,0,0" VerticalAlignment="Top" Width="201" ValueChanged="Slider_ValueChanged"/>
         <CheckBox x:Name="automeme" Content="automeme" HorizontalAlignment="Left" Margin="267,89,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="VRecogToggle" Content="vRecog->MbAlpha" HorizontalAlignment="Left" Margin="267,134,0,0" VerticalAlignment="Top" Height="25" Width="117" IsEnabledChanged="VRecogToggle_Checked"/>
+        <CheckBox x:Name="VRecogToggle" Content="vRecog->MbAlpha" HorizontalAlignment="Left" Margin="267,134,0,0" VerticalAlignment="Top" Height="25" Width="117" Unchecked ="VRecogToggle_Checked" Checked="VRecogToggle_Checked"/>
 
     </Grid>
 </Window>

@@ -8,3 +8,13 @@ C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Release\SharpTalk.csprojAsse
 C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Release\SharpTalk.csproj.CoreCompileInputs.cache
 C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Release\SharpTalk.dll
 C:\Users\Yoloswag\Downloads\Sharptalk\SharpTalk\obj\Release\SharpTalk.pdb
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\lib\FonixTalk.dll
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\lib\ftalk_us.dll
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\lib\ftalk_us.dic
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\SharpTalk.XML
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\SharpTalk.dll
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\bin\Release\SharpTalk.pdb
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\obj\Release\SharpTalk.csprojAssemblyReference.cache
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\obj\Release\SharpTalk.csproj.CoreCompileInputs.cache
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\obj\Release\SharpTalk.dll
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\SharpTalk\obj\Release\SharpTalk.pdb

@@ -127,7 +127,7 @@ namespace FMocker
         {
             new Thread(new ThreadStart(() =>
             {
-                
+
                 //https://stackoverflow.com/questions/18812224/c-sharp-recording-audio-from-soundcard
                 //store the audio ; the past 5 seconds
                 using (capture = new WasapiLoopbackCapture())
@@ -142,6 +142,7 @@ namespace FMocker
                     //create a wavewriter to write the data to
                     //using (WaveWriter w = new WaveWriter(SaveDirectory + "dump.wav", capture.WaveFormat))
                     {
+                        
                         //setup an eventhandler to receive the recorded data. this is fired 10 times per second
                         capture.DataAvailable += (s, e) =>
                         {

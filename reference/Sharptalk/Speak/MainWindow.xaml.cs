@@ -18,6 +18,9 @@ using System.Speech;
 using System.Speech.Synthesis;
 using SharpTalk;
 using System.Speech.Recognition;
+using CSCore.CoreAudioAPI;
+using CSCore.Codecs.WAV;
+using System.IO;
 
 namespace StevenTTS
 {
@@ -160,10 +163,10 @@ namespace StevenTTS
                {
                    Console.WriteLine("idiot mock started.");
                    IdiotMock moron = new IdiotMock();
-                   
+                   moron.wasapicapture();
                    while(true)
                    {
-                       Thread.Sleep(1);
+                       Thread.Sleep(100);
                        moron.cycle();
                    }
                    //listen to voices
@@ -180,20 +183,73 @@ namespace StevenTTS
                 catch (Exception) { }
             }
         }
+        private Thread idiotMockRecogToMBATTS = null;
         private class IdiotMock
         {
+            private SpeechStreamer m;
+            public void wasapicapture()
+            {
+                new Thread(new ThreadStart(() =>
+                {
+                    using (var capture = new CSCore.SoundIn.WasapiLoopbackCapture())
+                    {
+                        //if necessary, you can choose a device here
+                        //to do so, simply set the device property of the capture to any MMDevice
+                        //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
+
+                        //initialize the selected device for recording
+                        capture.Initialize();
+
+
+
+                    //create a wavewriter to write the data to
+                    using (m = new SpeechStreamer(256))//WaveWriter w = new WaveWriter(SaveDirectory + "dump.wav", capture.WaveFormat))
+                        {
+
+                            //setup an eventhandler to receive the recorded data. this is fired 10 times per second
+                            capture.DataAvailable += (s, e) =>
+                            {
+                                //save the recorded audio
+                                //Log("e.Data.Length= " + e.Data.Length);//35280
+                                //w.Write(e.Data, e.Offset, e.ByteCount);
+                                //shifter.Add(e.Data, e.Offset, e.ByteCount);
+                                m.Write(e.Data, e.Offset, e.ByteCount);
+                            };
+
+                            //start recording
+                            capture.Start();
+
+                            bool always = true;
+                            while (always) ;
+                            //stop recording
+                            capture.Stop();
+                        }
+                    }
+            })).Start();
+            }
             //record audio and keep spamming the um thing
             public void cycle()
             {
+                
                 SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine();
                 Grammar dictationGrammar = new DictationGrammar();
                 recognizer.LoadGrammar(dictationGrammar);
                 try
                 {
-                    recognizer.SetInputToDefaultAudioDevice();
-                    RecognitionResult result = recognizer.Recognize();
-                    string res = result.Text;
-                    Console.WriteLine("res= " + res);
+                    System.Speech.AudioFormat.SpeechAudioFormatInfo formatInfo = new System.Speech.AudioFormat.SpeechAudioFormatInfo(8000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
+                    recognizer.SetInputToAudioStream(m, formatInfo);
+                    try
+                    {
+                        //https://social.msdn.microsoft.com/Forums/en-US/8b8ffed4-ed36-43db-bd2f-4db88ca0898e/passing-in-a-user-created-stream-for-the-speech-recognition-engines-setinputtoaudiostream-how?forum=kinectsdk
+                        //7/30/18: use this
+                        https://social.msdn.microsoft.com/Forums/en-US/8b8ffed4-ed36-43db-bd2f-4db88ca0898e/passing-in-a-user-created-stream-for-the-speech-recognition-engines-setinputtoaudiostream-how?forum=kinectsdk
+                        RecognitionResult result = recognizer.Recognize();
+                        string res = result.Text;
+                        Console.WriteLine("res= " + res);
+                    }
+                    catch(System.FormatException) { }  
+
+                        
                 }
                 catch (InvalidOperationException exception)
                 {
@@ -206,6 +262,113 @@ namespace StevenTTS
 
             }
 
-        private Thread idiotMockRecogToMBATTS = null;
+        }
+    }
+    class SpeechStreamer : Stream
+    {
+        private AutoResetEvent _writeEvent;
+        private List<byte> _buffer;
+        private int _buffersize;
+        private int _readposition;
+        private int _writeposition;
+        private bool _reset;
+
+        public SpeechStreamer(int bufferSize)
+        {
+            _writeEvent = new AutoResetEvent(false);
+            _buffersize = bufferSize;
+            _buffer = new List<byte>(_buffersize);
+            for (int i = 0; i < _buffersize; i++)
+                _buffer.Add(new byte());
+            _readposition = 0;
+            _writeposition = 0;
+        }
+
+        public override bool CanRead
+        {
+            get { return true; }
+        }
+
+        public override bool CanSeek
+        {
+            get { return false; }
+        }
+
+        public override bool CanWrite
+        {
+            get { return true; }
+        }
+
+        public override long Length
+        {
+            get { return -1L; }
+        }
+
+        public override long Position
+        {
+            get { return 0L; }
+            set { }
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return 0L;
+        }
+
+        public override void SetLength(long value)
+        {
+
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            int i = 0;
+            while (i < count && _writeEvent != null)
+            {
+                if (!_reset && _readposition >= _writeposition)
+                {
+                    _writeEvent.WaitOne(100, true);
+                    continue;
+                }
+                buffer[i] = _buffer[_readposition + offset];
+                _readposition++;
+                if (_readposition == _buffersize)
+                {
+                    _readposition = 0;
+                    _reset = false;
+                }
+                i++;
+            }
+
+            return count;
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            for (int i = offset; i < offset + count; i++)
+            {
+                _buffer[_writeposition] = buffer[i];
+                _writeposition++;
+                if (_writeposition == _buffersize)
+                {
+                    _writeposition = 0;
+                    _reset = true;
+                }
+            }
+            _writeEvent.Set();
+
+        }
+
+        public override void Close()
+        {
+            _writeEvent.Close();
+            _writeEvent = null;
+            base.Close();
+        }
+
+        public override void Flush()
+        {
+
+        }
     }
 }
