@@ -43,7 +43,7 @@ namespace StevenTTS
         private void begin()
         { 
         TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBoxHandle);
-            int index = -1;
+            int index = 0;
             while (File.Exists("dump" + ++index + ".wav"))
             {
                 File.Delete("dump" + index + ".wav");
@@ -239,6 +239,11 @@ namespace StevenTTS
         private class IdiotMock
         {
             private int localcounter = -1;   
+            private void recognizer_SpeechRecognized(SpeechRecognizedEventArgs e)
+            {
+
+
+            }
             //record audio and keep spamming the um thing
             public void cycle()
             {
@@ -259,7 +264,7 @@ namespace StevenTTS
                 //Thread.Sleep(5000);
                 recognizer.SetInputToDefaultAudioDevice();
                 //recognizer.SetInputToWaveFile("dump" + localcounter + ".wav");
-                
+                //recognizer.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(recognizer_SpeechRecognized);
                 RecognitionResult result = recognizer.Recognize();
                 try
                 {

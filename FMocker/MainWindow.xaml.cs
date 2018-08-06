@@ -1,24 +1,15 @@
 ﻿using Microsoft.Win32;
+using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Media;
 using System.Runtime.InteropServices;
-using System.Speech.Recognition;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace FMocker
 {
@@ -54,18 +45,41 @@ namespace FMocker
             {
                 automoonbasethread = new Thread(new ThreadStart(() =>
                 {
-                    speechrecog();
+                    StartSpeechRecogHack();
 
                 }));
                 automoonbasethread.Start();
             }
             else
             {
-                automoonbasethread.Abort();
+                    SetDeviceToAudio2();
+                    automoonbasethread.Abort();
             }
         }
 
-                bool isDown = false;
+        private void SetDeviceToAudio2()
+        {
+            var enumerator = new MMDeviceEnumerator();
+            var defaultrecordingdevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+            //https://www.codeproject.com/Articles/31836/Changing-your-Windows-audio-device-programmaticall
+            if (!defaultrecordingdevice.FriendlyName.ToLower().Contains("cable output"))
+            {
+
+                //switch device LOL
+                //ctrl+alt+f7
+                keybd_event(VK_LCONTROL, 0, 0, 0);// presses ctrl
+                keybd_event(VK_MENU, 0, 0, 0);
+                keybd_event(VK_F7, 0, 0, 0);
+                keybd_event(VK_LCONTROL, 0, 2, 0);// presses ctrl
+                keybd_event(VK_MENU, 0, 2, 0);
+                keybd_event(VK_F7, 0, 2, 0);
+                Thread.Sleep(2000);
+            }
+
+
+
+        }
+        bool isDown = false;
         private FClipper clipper = null;
         private void Go()
         {
@@ -75,35 +89,135 @@ namespace FMocker
                 clipper = new FClipper(5000);
                 clipper.StartRecording();
                 Console.WriteLine("Recording started.");
-                
             }));
             tred.SetApartmentState(ApartmentState.STA);
             tred.Start();
+            
 
-           
         }
-        private void speechrecog()
+        private static void log(Object o)
         {
-            //https://www.codeproject.com/Articles/483347/Speech-recognition-speech-to-text-text-to-speech-a
-            SpeechRecognitionEngine sre = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
-            sre.EndSilenceTimeoutAmbiguous = new TimeSpan(0);
-            sre.EndSilenceTimeout = new TimeSpan(0);
-            sre.LoadGrammar(new DictationGrammar());
-           
+            Console.WriteLine(o.ToString());
+        }
 
-            sre.SetInputToDefaultAudioDevice();
-           
-            while (true)
+        //[DllImport("user32.dll", SetLastError = true)]
+        //public static extern bool PostMessage(int hWnd, uint Msg, int wParam, int lParam);
+        /// <summary>
+        /// Synthesizes keystrokes, mouse motions, and button clicks.
+        /// </summary>
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+        public const int VK_LCONTROL = 0xA2;
+        public const int VK_MENU = 0x12; //Alt key code
+        //https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
+        public const int VK_F7 = 0x76;
+
+        //PostMessage(hWnd, WM_LBUTTONDBLCLK, 0, l);
+
+
+            private void SetDeviceToAudio1()
+        {
+            var enumerator = new MMDeviceEnumerator();
+            var defaultrecordingdevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
+            //https://www.codeproject.com/Articles/31836/Changing-your-Windows-audio-device-programmaticall
+            log(defaultrecordingdevice.FriendlyName);
+            if (defaultrecordingdevice.FriendlyName.ToLower().Contains("cable output"))
             {
-                RecognitionResult Result = sre.Recognize();
-                string ResultString = "";
-                foreach (RecognizedWordUnit w in Result.Words)
-                {
-                    ResultString += w.Text + " ";
 
-                }
-                Console.WriteLine(ResultString);
+                //switch device LOL
+                //ctrl+alt+f7
+                keybd_event(VK_LCONTROL, 0, 0, 0);// presses ctrl
+                keybd_event(VK_MENU, 0, 0, 0);
+                keybd_event(VK_F7, 0, 0, 0);
+                keybd_event(VK_LCONTROL, 0, 2, 0);// presses ctrl
+                keybd_event(VK_MENU, 0, 2, 0);
+                keybd_event(VK_F7, 0, 2, 0);
+                Thread.Sleep(2000);
             }
+
+        }
+        private void StartSpeechRecogHack()
+        {
+            //https://stackoverflow.com/questions/35964955/selenium-c-sharp-interact-with-chrome-microphone-window
+            //selenium API
+            //https://www.google.com/intl/en/chrome/demos/speech.html
+            ChromeOptions chromeOptions = new ChromeOptions();
+            //Environment.SetEnvironmentVariable("webdriver.chrome.driver",
+            //                "C:\\Users\\Yoloswag\\source\\repos\\FMocker\\packages\\" +
+            //                "Selenium.WebDriver.ChromeDriver.2.41.0\\driver\\win32" +
+            //                "\\chromedriver.exe");
+
+            //https://peter.sh/experiments/chromium-command-line-switches/
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+            service.HideCommandPromptWindow = true;
+
+            chromeOptions.AddArguments("allow-file-access-from-files"
+                                       //,"use-fake-device-for-media-stream"
+                                       ,"use-fake-ui-for-media-stream"
+                                       //,"headless"
+                                       //"mute-audio"
+                                       ,"disable-notifications"
+            //, "use-file-for-fake-audio-capture='C:\\Users\\Yoloswag\\" +
+            //    "source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
+            //    "idontlikeplayback.wav'"
+            );
+            //chromeOptions.addArguments('start-maximized');
+            //chromeOptions.addArguments('incognito');
+            //chromeOptions.addArguments('headless');
+            //chromeOptions.setUserPreferences({'download.default_directory' : '/path/to/your/download/directory'});
+
+
+            //for (int n = -1; n <  WaveIn.DeviceCount; n++)
+            //{
+            //    var caps = WaveIn.GetCapabilities(n);
+            //    log(caps.ProductName);
+            //}
+
+            SetDeviceToAudio1();
+
+
+            IWebDriver driver = new ChromeDriver(service,chromeOptions);
+            
+            
+            driver.Navigate().GoToUrl("https://www.google.com/intl/en/chrome/demos/speech.html");
+            
+            
+            var googleHackRecordButton = driver.FindElement(By.Id("start_img"));
+            googleHackRecordButton.Click();
+
+            log("opening basicallynickwav");
+            //playback a file from speaker to CABLE_A(chrome is configured for that)
+                using (var audioFile = new AudioFileReader(
+                    "C:\\Users\\Yoloswag\\source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
+                    "idontlikeplayback.wav"
+                    ))
+                {
+                    int selDevice = -1;
+                    for (int n = -1; n < WaveOut.DeviceCount; n++)
+                    {
+                        var caps = WaveOut.GetCapabilities(n);
+                        if (caps.ProductName.Contains("CABLE Input"))
+                        {
+                            selDevice = n;
+                            break;
+                        }
+                    }
+                    using (var outputDevice = new WaveOutEvent()
+                    {
+                        DeviceNumber = selDevice
+                    })
+                    {
+
+                        outputDevice.Init(audioFile);
+                        outputDevice.Volume = 1f;
+                        outputDevice.Play();
+                        while (outputDevice.PlaybackState == PlaybackState.Playing)
+                        {
+                            Thread.Sleep(1000);
+                        }
+                    }
+                }
+            log("doneraedingv");
 
 
         }
