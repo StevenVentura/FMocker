@@ -196,7 +196,7 @@ namespace FMocker
                     for (int n = -1; n < WaveOut.DeviceCount; n++)
                     {
                         var caps = WaveOut.GetCapabilities(n);
-                        if (caps.ProductName.Contains("CABLE Input"))
+                        if (caps.ProductName.Contains("CABLE-A Input"))
                         {
                             selDevice = n;
                             break;
@@ -219,6 +219,8 @@ namespace FMocker
                 }
             log("doneraedingv");
 
+            var googlehackOutputBox = driver.FindElement(By.Id("final_span"));
+            string text = googlehackOutputBox.Text;
 
         }
 
