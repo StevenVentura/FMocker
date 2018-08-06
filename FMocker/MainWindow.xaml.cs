@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using CSCore.Codecs.WAV;
+using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using OpenQA.Selenium;
@@ -6,6 +7,7 @@ using OpenQA.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Speech.Recognition;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +32,7 @@ namespace FMocker
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+            
             Go(); 
         }
         public MainWindow()
@@ -45,16 +48,60 @@ namespace FMocker
             {
                 automoonbasethread = new Thread(new ThreadStart(() =>
                 {
-                    StartSpeechRecogHack();
-
+                    while (true)
+                    {
+                        int currentifleindexs = x
+                        log("speakers to mic()");
+                        SpeakersToMic();
+                        log("shitty microsoftboy()");
+                        if (UseShittyMicrosoftAPIToCheckForPresenceOfSound())
+                        {
+                            log("hack go()");
+                            StartSpeechRecogHack();
+                        }                       
+                    }
                 }));
                 automoonbasethread.Start();
             }
             else
             {
-                    SetDeviceToAudio2();
                     automoonbasethread.Abort();
             }
+        }
+
+        private bool UseShittyMicrosoftAPIToCheckForPresenceOfSound()
+        {
+            SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(
+                   new System.Globalization.CultureInfo("en-US"));
+            recognizer.LoadGrammar(new DictationGrammar());
+            recognizer.SetInputToWaveFile("stevenfile.wav");
+            recognizer.SpeechDetected += Heeeyyyyy;
+            recognizer.RecognizeAsync();
+            bool nothingdetected = true;
+            void Heeeyyyyy(object o1, object o2)
+            {
+                log("detected audiio xD");
+                nothingdetected = false;
+            }
+
+
+
+            DateTime timeoutboy = DateTime.Now.AddSeconds(3);
+            while (DateTime.Now < timeoutboy)
+            {
+                if (!nothingdetected)
+                {
+                    recognizer.Dispose();
+                    return true;
+                }
+            }
+            recognizer.Dispose();
+            return false;
+
+
+          
+
+
         }
 
         private void SetDeviceToAudio2()
@@ -75,6 +122,7 @@ namespace FMocker
                 keybd_event(VK_F7, 0, 2, 0);
                 Thread.Sleep(2000);
             }
+            enumerator.Dispose();
 
 
 
@@ -85,6 +133,7 @@ namespace FMocker
         {
             Thread tred = new Thread(new ThreadStart(() =>
             {
+                initchromething();
                 TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
                 clipper = new FClipper(5000);
                 clipper.StartRecording();
@@ -92,8 +141,8 @@ namespace FMocker
             }));
             tred.SetApartmentState(ApartmentState.STA);
             tred.Start();
-            
 
+            
         }
         private static void log(Object o)
         {
@@ -113,11 +162,51 @@ namespace FMocker
         public const int VK_F7 = 0x76;
 
         //PostMessage(hWnd, WM_LBUTTONDBLCLK, 0, l);
+        private void SpeakersToMic()
+        {
+           
+               
+        //https://stackoverflow.com/questions/18812224/c-sharp-recording-audio-from-soundcard
+        //store the audio ; the past 5 seconds
+        DateTime duedate = DateTime.Now.AddSeconds(8);
+        using (var capture = new CSCore.SoundIn.WasapiLoopbackCapture())
+        {
+            //if necessary, you can choose a device here
+            //to do so, simply set the device property of the capture to any MMDevice
+            //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
 
+                        
+            //initialize the selected device for recording
+            capture.Initialize();
+            //create a wavewriter to write the data to
+            using (WaveWriter w = new WaveWriter("stevenfile.wav", capture.WaveFormat))
+            {
 
-            private void SetDeviceToAudio1()
+                //setup an eventhandler to receive the recorded data. this is fired 10 times per second
+                capture.DataAvailable += (s, e) =>
+                {
+                    //save the recorded audio
+                    //Log("e.Data.Length= " + e.Data.Length);//35280
+                    w.Write(e.Data, e.Offset, e.ByteCount);
+                                
+                };
+
+                //start recording
+                capture.Start();
+
+                Thread.Sleep(6666);
+                //stop recording
+                capture.Stop();
+            }
+        }
+              
+            
+
+        }
+        private void SetDeviceToAudio1()
         {
             var enumerator = new MMDeviceEnumerator();
+            log("????");
             var defaultrecordingdevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
             //https://www.codeproject.com/Articles/31836/Changing-your-Windows-audio-device-programmaticall
             log(defaultrecordingdevice.FriendlyName);
@@ -134,10 +223,12 @@ namespace FMocker
                 keybd_event(VK_F7, 0, 2, 0);
                 Thread.Sleep(2000);
             }
+            enumerator.Dispose();
 
         }
-        private void StartSpeechRecogHack()
+        private void initchromething()
         {
+
             //https://stackoverflow.com/questions/35964955/selenium-c-sharp-interact-with-chrome-microphone-window
             //selenium API
             //https://www.google.com/intl/en/chrome/demos/speech.html
@@ -153,10 +244,10 @@ namespace FMocker
 
             chromeOptions.AddArguments("allow-file-access-from-files"
                                        //,"use-fake-device-for-media-stream"
-                                       ,"use-fake-ui-for-media-stream"
+                                       , "use-fake-ui-for-media-stream"
                                        //,"headless"
                                        //"mute-audio"
-                                       ,"disable-notifications"
+                                       , "disable-notifications"
             //, "use-file-for-fake-audio-capture='C:\\Users\\Yoloswag\\" +
             //    "source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
             //    "idontlikeplayback.wav'"
@@ -173,23 +264,28 @@ namespace FMocker
             //    log(caps.ProductName);
             //}
 
+            
+
+            chromeDriver = new ChromeDriver(service, chromeOptions);
             SetDeviceToAudio1();
-
-
-            IWebDriver driver = new ChromeDriver(service,chromeOptions);
+        }
+        private IWebDriver chromeDriver;
+        bool firstPassSpeechRecog = false;
+        private void StartSpeechRecogHack()
+        {
             
             
-            driver.Navigate().GoToUrl("https://www.google.com/intl/en/chrome/demos/speech.html");
+            chromeDriver.Navigate().GoToUrl("https://www.google.com/intl/en/chrome/demos/speech.html");
             
             
-            var googleHackRecordButton = driver.FindElement(By.Id("start_img"));
+            var googleHackRecordButton = chromeDriver.FindElement(By.Id("start_img"));
             googleHackRecordButton.Click();
 
-            log("opening basicallynickwav");
             //playback a file from speaker to CABLE_A(chrome is configured for that)
                 using (var audioFile = new AudioFileReader(
-                    "C:\\Users\\Yoloswag\\source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
-                    "idontlikeplayback.wav"
+                    //"C:\\Users\\Yoloswag\\source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
+                    //"idontlikeplayback.wav"
+                    "stevenfile.wav"
                     ))
                 {
                     int selDevice = -1;
@@ -219,9 +315,9 @@ namespace FMocker
                 }
             log("doneraedingv");
 
-            var googlehackOutputBox = driver.FindElement(By.Id("final_span"));
+            var googlehackOutputBox = chromeDriver.FindElement(By.Id("final_span"));
             string text = googlehackOutputBox.Text;
-
+            log("text is " + text);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -369,6 +465,16 @@ namespace FMocker
                     KillableThreads.Clear();
                     break;
                 case "CloseButton":
+                    try
+                    {
+                        SetDeviceToAudio2();
+                    }
+                    catch { }
+                    try
+                    {
+                        chromeDriver.Close();
+                    }
+                    catch { }
                     Environment.Exit(0);
                     break;
                 case "LoadButton":
