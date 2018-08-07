@@ -33,7 +33,7 @@ namespace FMocker
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
-            
+            shroud.Value = 1f;
             Go(); 
         }
         public MainWindow()
@@ -50,19 +50,31 @@ namespace FMocker
             {
                 automoonbasethread = new Thread(new ThreadStart(() =>
                 {
+
+                    Thread lastThread = null;
                     while (true)
                     {
-                        currentFileIndexer++;
-                        if (currentFileIndexer > 16)
-                            currentFileIndexer = 0;
+                        
                         log("speakers to mic()");
-                        SpeakersToMic();
+                        
+                          currentFileIndexer++;
+                          if (currentFileIndexer > 16)
+                              currentFileIndexer = 0;
+                          SpeakersToMic();
+
+
+                        if (lastThread != null)
+                            lastThread.Join();
                         //log("shitty microsoftboy()");
                         //if (UseShittyMicrosoftAPIToCheckForPresenceOfSound())
+                        lastThread = new Thread(new ParameterizedThreadStart((__currentFileIndexer) =>
                         {
-                            log("hack go()");
-                            StartSpeechRecogHack();
-                        }                       
+                            {
+                                log("hack go()");
+                                StartSpeechRecogHack((int)__currentFileIndexer);
+                            }
+                        }));
+                        lastThread.Start(currentFileIndexer);
                     }
                 }));
                 automoonbasethread.Start();
@@ -106,8 +118,8 @@ namespace FMocker
                 initchromething();
                 TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
                 clipper = new FClipper(5000);
-                //clipper.StartRecording();
-                //Console.WriteLine("Recording started.");
+                clipper.StartRecording();
+                Console.WriteLine("Recording started.");
             }));
             tred.SetApartmentState(ApartmentState.STA);
             tred.Start();
@@ -247,7 +259,7 @@ namespace FMocker
             SetDeviceToAudio1();
         }
         private IWebDriver chromeDriver;
-        private void StartSpeechRecogHack()
+        private void StartSpeechRecogHack(int _currentFileIndexer/*yes i am overriding a variable*/)
         {
             
             
@@ -261,7 +273,7 @@ namespace FMocker
                 using (var audioFile = new AudioFileReader(
                     //"C:\\Users\\Yoloswag\\source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
                     //"idontlikeplayback.wav"
-                    "stevenfile" + currentFileIndexer + ".wav"
+                    "stevenfile" + _currentFileIndexer + ".wav"
                     ))
                 {
                     int selDevice = -1;
@@ -285,12 +297,18 @@ namespace FMocker
                         outputDevice.Play();
                         while (outputDevice.PlaybackState == PlaybackState.Playing)
                         {
-                            Thread.Sleep(1000);
+                            Thread.Sleep(10);
                         }
                     }
                 }
-            log("doneraedingv");
 
+            log("doneraedingv");
+            try
+            {
+                chromeDriver.FindElement(By.Id("copy_button")).Click();
+                log("clicked copybutton for finalizing");
+            }
+            catch { }
             var googlehackOutputBox = chromeDriver.FindElement(By.Id("final_span"));
             string text = googlehackOutputBox.Text;
             if (text == null || text == "")
