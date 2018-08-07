@@ -46,3 +46,5 @@ sqlite3/
 *.ide-wal
 *.tmp
 *.lref
+
+!*.dll

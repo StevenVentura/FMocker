@@ -184,7 +184,6 @@ namespace FMocker
         private void SetDeviceToAudio1()
         {
             var enumerator = new MMDeviceEnumerator();
-            log("????");
             var defaultrecordingdevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
             //https://www.codeproject.com/Articles/31836/Changing-your-Windows-audio-device-programmaticall
             log(defaultrecordingdevice.FriendlyName);
@@ -294,6 +293,8 @@ namespace FMocker
 
             var googlehackOutputBox = chromeDriver.FindElement(By.Id("final_span"));
             string text = googlehackOutputBox.Text;
+            if (text == null || text == "")
+                text = chromeDriver.FindElement(By.Id("interim_span")).Text;
             log("text is " + text);
             //now play it back as moonbase alpha kek
             PlayAsMoonbaseAlphaMeme(text);
