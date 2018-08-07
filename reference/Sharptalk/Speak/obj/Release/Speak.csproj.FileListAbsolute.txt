@@ -34,7 +34,6 @@ C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\Tex
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\ftalk_us.dic
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\MainWindow.xaml.cs
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\lib\FonixTalk.dll
-C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\lib\ftalk_us.dll
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\lib\ftalk_us.dic
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\Speak.exe.config
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\Speak.exe
@@ -42,3 +41,4 @@ C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\Spe
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\obj\Release\MainWindow.baml
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\obj\Release\Speak.g.resources
 C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\obj\Release\Speak.csproj.CoreCompileInputs.cache
+C:\Users\Yoloswag\source\repos\FMocker\reference\Sharptalk\Speak\bin\Release\lib\ftalk_us.dll

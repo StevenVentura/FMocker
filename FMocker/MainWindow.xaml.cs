@@ -1,9 +1,10 @@
-﻿using CSCore.Codecs.WAV;
+﻿
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using StevenTTS;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -41,6 +42,7 @@ namespace FMocker
             
         }
         Thread automoonbasethread = null;
+        private int currentFileIndexer = -1;
         private void VRecogToggle_Checked(object sender, RoutedEventArgs e)
         {
             //
@@ -50,11 +52,13 @@ namespace FMocker
                 {
                     while (true)
                     {
-                        int currentifleindexs = x
+                        currentFileIndexer++;
+                        if (currentFileIndexer > 16)
+                            currentFileIndexer = 0;
                         log("speakers to mic()");
                         SpeakersToMic();
-                        log("shitty microsoftboy()");
-                        if (UseShittyMicrosoftAPIToCheckForPresenceOfSound())
+                        //log("shitty microsoftboy()");
+                        //if (UseShittyMicrosoftAPIToCheckForPresenceOfSound())
                         {
                             log("hack go()");
                             StartSpeechRecogHack();
@@ -69,40 +73,7 @@ namespace FMocker
             }
         }
 
-        private bool UseShittyMicrosoftAPIToCheckForPresenceOfSound()
-        {
-            SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(
-                   new System.Globalization.CultureInfo("en-US"));
-            recognizer.LoadGrammar(new DictationGrammar());
-            recognizer.SetInputToWaveFile("stevenfile.wav");
-            recognizer.SpeechDetected += Heeeyyyyy;
-            recognizer.RecognizeAsync();
-            bool nothingdetected = true;
-            void Heeeyyyyy(object o1, object o2)
-            {
-                log("detected audiio xD");
-                nothingdetected = false;
-            }
-
-
-
-            DateTime timeoutboy = DateTime.Now.AddSeconds(3);
-            while (DateTime.Now < timeoutboy)
-            {
-                if (!nothingdetected)
-                {
-                    recognizer.Dispose();
-                    return true;
-                }
-            }
-            recognizer.Dispose();
-            return false;
-
-
-          
-
-
-        }
+        
 
         private void SetDeviceToAudio2()
         {
@@ -127,7 +98,6 @@ namespace FMocker
 
 
         }
-        bool isDown = false;
         private FClipper clipper = null;
         private void Go()
         {
@@ -136,8 +106,8 @@ namespace FMocker
                 initchromething();
                 TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
                 clipper = new FClipper(5000);
-                clipper.StartRecording();
-                Console.WriteLine("Recording started.");
+                //clipper.StartRecording();
+                //Console.WriteLine("Recording started.");
             }));
             tred.SetApartmentState(ApartmentState.STA);
             tred.Start();
@@ -168,18 +138,19 @@ namespace FMocker
                
         //https://stackoverflow.com/questions/18812224/c-sharp-recording-audio-from-soundcard
         //store the audio ; the past 5 seconds
-        DateTime duedate = DateTime.Now.AddSeconds(8);
-        using (var capture = new CSCore.SoundIn.WasapiLoopbackCapture())
+        using (var capture = new WasapiLoopbackCapture())
         {
-            //if necessary, you can choose a device here
-            //to do so, simply set the device property of the capture to any MMDevice
-            //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
+                //if necessary, you can choose a device here
+                //to do so, simply set the device property of the capture to any MMDevice
+                //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
 
-                        
-            //initialize the selected device for recording
-            capture.Initialize();
+
+                //initialize the selected device for recording
+               
+                 
+                //Console.WriteLine("tryna make " + "stevenfile" + currentFileIndexer + ".wav");
             //create a wavewriter to write the data to
-            using (WaveWriter w = new WaveWriter("stevenfile.wav", capture.WaveFormat))
+            using (WaveFileWriter w = new WaveFileWriter("stevenfile" + currentFileIndexer + ".wav", capture.WaveFormat))
             {
 
                 //setup an eventhandler to receive the recorded data. this is fired 10 times per second
@@ -187,16 +158,23 @@ namespace FMocker
                 {
                     //save the recorded audio
                     //Log("e.Data.Length= " + e.Data.Length);//35280
-                    w.Write(e.Data, e.Offset, e.ByteCount);
+                    w.Write(e.Buffer, 0, e.BytesRecorded);
                                 
                 };
+                    capture.RecordingStopped += (s, e) =>
+                    {
+                        w.Dispose();
+                        
+                        capture.Dispose();
 
-                //start recording
-                capture.Start();
+                    };
+
+                    //start recording
+                    capture.StartRecording();
 
                 Thread.Sleep(6666);
-                //stop recording
-                capture.Stop();
+                    //stop recording
+                    capture.StopRecording();
             }
         }
               
@@ -270,7 +248,6 @@ namespace FMocker
             SetDeviceToAudio1();
         }
         private IWebDriver chromeDriver;
-        bool firstPassSpeechRecog = false;
         private void StartSpeechRecogHack()
         {
             
@@ -285,7 +262,7 @@ namespace FMocker
                 using (var audioFile = new AudioFileReader(
                     //"C:\\Users\\Yoloswag\\source\\repos\\FMocker\\FMocker\\SavedFClips\\" +
                     //"idontlikeplayback.wav"
-                    "stevenfile.wav"
+                    "stevenfile" + currentFileIndexer + ".wav"
                     ))
                 {
                     int selDevice = -1;
@@ -318,6 +295,73 @@ namespace FMocker
             var googlehackOutputBox = chromeDriver.FindElement(By.Id("final_span"));
             string text = googlehackOutputBox.Text;
             log("text is " + text);
+            //now play it back as moonbase alpha kek
+            PlayAsMoonbaseAlphaMeme(text);
+        }
+        private string memetext(string boring)
+        {
+            string meme = "";
+            //   :nv
+            // [:nv] nick[k < 1, 90 >]is[s<1,40>] an[n < 800, 200 >] nibba[r < 900, 400 >]
+            //[:nh] HEY[k < 1, 230 >] BEAR[s < 1, 230 >]MAYBE[s < 1, 80 >] DROP[s < 1, 110 >]WITHIN[s < 1, 140 >] FIVE[s < 1, 170 >]MILES[s < 1, 2000 >] OF[s < 1, 230 >]uh[s < 1, 270 >]
+            meme = "[:nh]";
+            string[] split = boring.Split(' ');
+            Random r = new Random();
+            foreach (var s in split)
+            {
+                meme += s + "[n<" + r.Next(800, 800) + "," + r.Next(200, 200) + "]";
+            }
+            return meme;
+        }
+        private int fonixFileIndexer = -1;
+        private string getFonixFileName()
+        {
+            return "FonixFile" + fonixFileIndexer + ".wav";
+        }
+        private void incrementFonixFile()
+        {
+            fonixFileIndexer++;
+            if (fonixFileIndexer > 16)
+            {
+                fonixFileIndexer = 0;
+            }
+        }
+        private void PlayAsMoonbaseAlphaMeme(string _Hah)
+        {
+            incrementFonixFile();
+            var deepFriedIncrementedString = memetext(_Hah);
+
+            PLEASEffsffff.PLEASE_TalkToWav(getFonixFileName(), deepFriedIncrementedString);
+            
+
+            using (var audioFile = new AudioFileReader(getFonixFileName()))
+            {
+                int selDevice = -1;
+                for (int n = -1; n < WaveOut.DeviceCount; n++)
+                {
+                    var caps = WaveOut.GetCapabilities(n);
+                    if (caps.ProductName.Contains("CABLE Input"))
+                    {
+                        selDevice = n;
+                        break;
+                    }
+                }
+                using (var outputDevice = new WaveOutEvent()
+                {
+                    DeviceNumber = selDevice
+                })
+                {
+                    outputDevice.Init(audioFile);
+                    outputDevice.Volume = (float)percentagevolume;
+                    outputDevice.Play();
+                    while (outputDevice.PlaybackState == PlaybackState.Playing)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                }
+            }
+
+
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -329,8 +373,6 @@ namespace FMocker
                     FClip clip = clipper.AddLastXSecondsToList();
                     ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
                     Console.WriteLine(clip.fileName + " added.");
-                    
-                    
                     break;
                 case "SaveButton":
                     if (((string)(ListBoxObject.SelectedValue)) == null)

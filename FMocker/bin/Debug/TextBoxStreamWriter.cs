@@ -11,7 +11,7 @@ using System.Threading;
 using System.Windows.Threading;
 using System.Windows;
 
-namespace FMocker
+namespace StevenTTS
 {
 
     class TextBoxStreamWriter : TextWriter

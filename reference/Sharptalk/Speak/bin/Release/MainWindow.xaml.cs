@@ -55,7 +55,7 @@ namespace StevenTTS
         new Thread(new ThreadStart(() =>
         {
             //start the voice saver
-            new SpeechInputFromSpeakerSaver().begindumpingfiles();
+            //new SpeechInputFromSpeakerSaver().begindumpingfiles();
 
         })).Start();
         }

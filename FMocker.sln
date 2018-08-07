@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FMocker", "FMocker\FMocker.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1D3685DA-C764-455E-927E-DF6CE00B7910}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpTalk", "reference\Sharptalk\SharpTalk\SharpTalk.csproj", "{339EA1D4-4CDE-4342-AAA0-81A35FCF87DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Speak", "reference\Sharptalk\Speak\Speak.csproj", "{FC185343-12C9-4013-BB40-37E9DD5DD49C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +21,14 @@ Global
 		{604BC0F3-247E-4EDF-A570-4F4C377F77C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{604BC0F3-247E-4EDF-A570-4F4C377F77C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{604BC0F3-247E-4EDF-A570-4F4C377F77C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{339EA1D4-4CDE-4342-AAA0-81A35FCF87DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{339EA1D4-4CDE-4342-AAA0-81A35FCF87DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{339EA1D4-4CDE-4342-AAA0-81A35FCF87DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{339EA1D4-4CDE-4342-AAA0-81A35FCF87DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC185343-12C9-4013-BB40-37E9DD5DD49C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC185343-12C9-4013-BB40-37E9DD5DD49C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC185343-12C9-4013-BB40-37E9DD5DD49C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC185343-12C9-4013-BB40-37E9DD5DD49C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

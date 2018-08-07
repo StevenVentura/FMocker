@@ -442,5 +442,11 @@
             Design voice value: 1
             </summary>
         </member>
+        <member name="F:SharpTalk.Sex.Gendervoid_Foxkin_Demiqueer">
+            <summary>
+            Indicates a brasil
+            Design voice value: 1
+            </summary>
+        </member>
     </members>
 </doc>

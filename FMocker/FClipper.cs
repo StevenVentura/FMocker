@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CSCore;
-using CSCore.SoundIn;
-using CSCore.Codecs.WAV;
 using System.Threading;
 using System.IO;
+using NAudio.Wave;
 
 namespace FMocker
 {
@@ -120,7 +118,7 @@ namespace FMocker
 
 
         }
-        private WasapiCapture capture = null;
+        private WasapiLoopbackCapture capture = null;
         private ShiftKeeperArray shifter = null;
         //only run once; thread to actually keep the last5 seconds of sound in memory
         public void StartRecording()
@@ -137,8 +135,10 @@ namespace FMocker
                     //to choose a device, take a look at the sample here: http://cscore.codeplex.com/
 
                     //initialize the selected device for recording
-                    capture.Initialize();
-                    shifter = new ShiftKeeperArray(TimeInterval, capture.WaveFormat.BytesPerSecond);
+
+                    
+
+                    shifter = new ShiftKeeperArray(TimeInterval, capture.WaveFormat.SampleRate/8 * capture.WaveFormat.BitsPerSample);
                     //create a wavewriter to write the data to
                     //using (WaveWriter w = new WaveWriter(SaveDirectory + "dump.wav", capture.WaveFormat))
                     {
@@ -149,16 +149,21 @@ namespace FMocker
                             //save the recorded audio
                             //Log("e.Data.Length= " + e.Data.Length);//35280
                             //w.Write(e.Data, e.Offset, e.ByteCount);
-                            shifter.Add(e.Data, e.Offset, e.ByteCount);
+                            shifter.Add(e.Buffer, 0, e.BytesRecorded);
                         };
+                        capture.RecordingStopped += (s, e) =>
+                        {
+                            
+                            capture.Dispose();
 
+                        };
                         //start recording
-                        capture.Start();
+                        capture.StartRecording();
 
                         bool always = true;
                         while (always) ;
                         //stop recording
-                        capture.Stop();
+                        capture.StopRecording();
                     }
                 }
             })).Start();
@@ -254,7 +259,7 @@ namespace FMocker
             //so easy just take last5 seconds of recording and put into an FClip object and push to tree
             string fileName = ""+GetCurrentTime() + ".wav";
             byte[] byteDataInCorrectOrder;
-            using (WaveWriter w = new WaveWriter(SaveDirectory + fileName, capture.WaveFormat))
+            using (WaveFileWriter w = new WaveFileWriter(SaveDirectory + fileName, capture.WaveFormat))
             {
                 byteDataInCorrectOrder = shifter.GetDataInCorrectOrder();
                 w.Write(byteDataInCorrectOrder, 0, byteDataInCorrectOrder.Length);

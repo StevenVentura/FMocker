@@ -21,3 +21,14 @@ C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\NAudio.dll
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\NAudio.xml
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\WebDriver.dll
 C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\WebDriver.xml
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\obj\Debug\FMocker_Content.g.cs
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\ftalk_us.dic
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\FonixTalk.dll
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\ftalk_us.dll
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\MainWindow.xaml.cs
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\lib\FonixTalk.dll
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\lib\ftalk_us.dll
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\lib\ftalk_us.dic
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\Speak.exe
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\Speak.pdb
+C:\Users\Yoloswag\source\repos\FMocker\FMocker\bin\Debug\Speak.exe.config
