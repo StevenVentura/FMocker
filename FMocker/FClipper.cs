@@ -11,7 +11,7 @@ namespace FMocker
 {
     class FClipper
     {
-        const string SaveDirectory = "..\\..\\SavedFClips\\";
+        private const string SaveDirectory = "..\\..\\SavedFClips\\";
         //Record() puts the last 5 seconds of audio into an FClip object
         
         private void Log(string _LogMe)
@@ -118,10 +118,66 @@ namespace FMocker
 
 
         }
+        public void StopRecordingSpecial()
+        {
+            stopbuttonisntpressed = false;
+        }
+        public bool stopbuttonisntpressed = false;
+        public Thread recordingSpecialThread;
+        private byte[] specialbuffer;
+        private string specialname;
+        public void StartRecordingSpecial(string _filename)
+        {
+            specialname = String.Copy(_filename);
+            MemoryStream dammit = new MemoryStream();
+            stopbuttonisntpressed = true;
+            recordingSpecialThread = new Thread(new ParameterizedThreadStart((__filenamebtw) =>
+            {
+
+                //https://stackoverflow.com/questions/18812224/c-sharp-recording-audio-from-soundcard
+                using (capture = new WasapiLoopbackCapture())
+                {
+
+                    //create a wavewriter to write the data to
+                    using (WaveFileWriter w = new WaveFileWriter(SaveDirectory + "temp.wav", capture.WaveFormat))
+                    {
+                        //setup an eventhandler to receive the recorded data. this is fired 10 times per second
+                        capture.DataAvailable += (s, e) =>
+                        {
+                            //save the recorded audio
+                            //Log("e.Data.Length= " + e.Data.Length);//35280
+                            w.Write(e.Buffer, 0, e.BytesRecorded);
+                            dammit.Write(e.Buffer, 0, e.BytesRecorded);
+                        };
+                        capture.RecordingStopped += (s, e) =>
+                        {
+                            try
+                            {
+                                capture.Dispose();
+                            }
+                            catch { }
+                        };
+                        //start recording
+                        capture.StartRecording();
+
+                        while (stopbuttonisntpressed) ;
+                        //stop recording
+                        capture.StopRecording();
+
+                        specialbuffer = dammit.ToArray();
+                        dammit.Close();
+                    }
+                }
+            }));
+            recordingSpecialThread.Start(_filename);
+
+
+        }
+
         private WasapiLoopbackCapture capture = null;
         private ShiftKeeperArray shifter = null;
         //only run once; thread to actually keep the last5 seconds of sound in memory
-        public void StartRecording()
+        public void StartRecordingEvery5()
         {
             new Thread(new ThreadStart(() =>
             {
@@ -253,7 +309,25 @@ namespace FMocker
         }
 
         public List<FClip> clips = new List<FClip>();
+        public FClip AddRandomCustomFileToList()
+        {
+            //specialname;
+            //specialbuffer;
 
+            byte[] copyboy = new byte[specialbuffer.Length];
+            Array.Copy(specialbuffer, copyboy, specialbuffer.Length);
+
+            using (WaveFileWriter w = new WaveFileWriter(SaveDirectory + specialname, capture.WaveFormat))
+            {
+                w.Write(copyboy, 0, copyboy.Length);
+            }
+
+            FClip clip = new FClip(specialbuffer, String.Copy(specialname));
+            clips.Add(clip);
+            return clip;
+
+
+        }
         public FClip AddLastXSecondsToList()
         {
             //so easy just take last5 seconds of recording and put into an FClip object and push to tree

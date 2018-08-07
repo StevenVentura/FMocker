@@ -7,6 +7,7 @@ using OpenQA.Selenium.Chrome;
 using StevenTTS;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Speech.Recognition;
 using System.Threading;
@@ -118,7 +119,7 @@ namespace FMocker
                 initchromething();
                 TextBoxStreamWriter t = new TextBoxStreamWriter(this.Dispatcher, OutputBox);
                 clipper = new FClipper(5000);
-                clipper.StartRecording();
+                clipper.StartRecordingEvery5();
                 Console.WriteLine("Recording started.");
             }));
             tred.SetApartmentState(ApartmentState.STA);
@@ -175,10 +176,13 @@ namespace FMocker
                 };
                     capture.RecordingStopped += (s, e) =>
                     {
-                        w.Dispose();
-                        
-                        capture.Dispose();
+                        try
+                        {
+                            w.Dispose();
 
+                            capture.Dispose();
+                        }
+                        catch { }
                     };
 
                     //start recording
@@ -382,16 +386,59 @@ namespace FMocker
 
 
         }
+        private string randomnamereeee()
+        {
+            string outboi = "";
+            string alphabet = "abcdefghijklmnopqrstuvwxyz";
+            Random r = new Random();
+            for (int i = 0; i < 10; i++)
+            {
+                outboi += alphabet.Substring(r.Next(0,alphabet.Length), 1);
+            }
 
+            return outboi + ".wav";
+        }
+        Thread ugh = null;
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Button button = (Button)sender;
+            
             switch (button.Name)
             {
+                case "StartRecord":
+                    {
+                        
+                        if (clipper.stopbuttonisntpressed == true)
+                        {
+                            log("its recording already idiot");
+                            return;
+                        }
+                        log("manual recording started.");
+                        ugh = new Thread(new ThreadStart(() =>
+                        {
+                            string randomfilenamepls = randomnamereeee();
+                            clipper.StartRecordingSpecial(randomfilenamepls);
+                            clipper.recordingSpecialThread.Join();
+                            log("manual recording ended. saved to " + randomfilenamepls);
+                        }));
+                        ugh.Start();
+                        
+                    }
+                    break;
+                case "EndRecord":
+                    {
+                        clipper.StopRecordingSpecial();
+                        ugh.Join();
+                        FClip clip = clipper.AddRandomCustomFileToList();
+                        ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
+                    }
+                    break;
                 case "RecordButton":
-                    FClip clip = clipper.AddLastXSecondsToList();
-                    ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
-                    Console.WriteLine(clip.fileName + " added.");
+                    {
+                        FClip clip = clipper.AddLastXSecondsToList();
+                        ListBoxObject.Items.Add(clipper.AddAndMapPath(clip.fileName));
+                        Console.WriteLine(clip.fileName + " added.");
+                    }
                     break;
                 case "SaveButton":
                     if (((string)(ListBoxObject.SelectedValue)) == null)
